@@ -23,8 +23,51 @@
   tar -xvf etcd-v3.2.18-linux-amd64.tar.gz
   mv etcd-v3.2.18-linux-amd64/etcd* /usr/local/bin
   ```
+- 或者也可以用 yum 直接安装
+- `yum -y install etcd`
+- 若使用yum安装，默认 etcd 命令将在 `/usr/bin` 目录下，注意修改下面的 `etcd.service` 文件中的启动命令地址为 `/usr/bin/etcd`。
+
 ### 创建 etcd 的 systemd unit 文件
-  > 注意替换 IP 地址为你自己的etcd集群的主机IP。
-- 
+- 我们需要手动创建 `etcd` 的系统服务文件 `etcd.service`，修改后的文件如下所示：
+  > 注意替换 IP 地址为你自己的 etcd 集群的主机 IP。
 - `cat /usr/lib/systemd/system/etcd.service`
+
+  ``` bash
+  [Unit]
+  Description=Etcd Server
+  After=network.target
+  After=network-online.target
+  Wants=network-online.target
+  Documentation=https://github.com/coreos
+  
+  [Service]
+  Type=notify
+  WorkingDirectory=/var/lib/etcd/
+  EnvironmentFile=-/etc/etcd/etcd.conf
+  ExecStart=/usr/local/bin/etcd \
+    --name ${ETCD_NAME} \
+    --cert-file=/etc/kubernetes/ssl/kubernetes.pem \
+    --key-file=/etc/kubernetes/ssl/kubernetes-key.pem \
+    --peer-cert-file=/etc/kubernetes/ssl/kubernetes.pem \
+    --peer-key-file=/etc/kubernetes/ssl/kubernetes-key.pem \
+    --trusted-ca-file=/etc/kubernetes/ssl/ca.pem \
+    --peer-trusted-ca-file=/etc/kubernetes/ssl/ca.pem \
+    --initial-advertise-peer-urls ${ETCD_INITIAL_ADVERTISE_PEER_URLS} \
+    --listen-peer-urls ${ETCD_LISTEN_PEER_URLS} \
+    --listen-client-urls ${ETCD_LISTEN_CLIENT_URLS},http://127.0.0.1:2379 \
+    --advertise-client-urls ${ETCD_ADVERTISE_CLIENT_URLS} \
+    --initial-cluster-token ${ETCD_INITIAL_CLUSTER_TOKEN} \
+    --initial-cluster infra1=https://192.168.8.66:2380,infra2=https://192.168.8.67:2380,infra3=https://192.168.8.68:2380 \
+    --initial-cluster-state new \
+    --data-dir=${ETCD_DATA_DIR}
+  Restart=on-failure
+  RestartSec=5
+  LimitNOFILE=65536
+  
+  [Install]
+  WantedBy=multi-user.target
+  ```
+- 完整 `Systemd Unit` 文件参见 [etcd.service](../kubernetes-manifests/systemd/etcd/etcd.service)
+
+
 
