@@ -73,7 +73,7 @@
 - 创建 kubernetes.pem 证书时使用的 kubernetes-csr.json 文件的 hosts 字段包含所有 etcd 节点的IP，否则证书校验会出错；
 - `--initial-cluster-state` 值为 `new` 时，`--name` 的参数值必须位于 `--initial-cluster` 列表中；
 
-- 完整 `Systemd Unit` 文件参见 [etcd.service](https://github.com/yeaheo/kubernetes-manifests/blob/master/systemd/etcd/etcd.service)
+- 完整 `Systemd Unit` 文件参见 [etcd.service](https://github.com/yeaheo/kubernetes-manifests/blob/master/systemd/etcd.service)
 
 ### 创建 etcd 配置文件
 - etcd 配置文件 `/etc/etcd/etcd.conf` 也需要我们自己创建，具体内容如下：
@@ -95,7 +95,7 @@
 - `ETCD_NAME` 需换成对应节点的 infra1/2/3。
 - 其他两个节点的配置同上，只是对应 IP 地址和节点名称不同而已，需要同时启动 etcd 服务。
 
-- 完整 `etcd` 配置文件参见 [etcd.conf](https://github.com/yeaheo/kubernetes-manifests/blob/master/config/etcd/etcd.conf)
+- 完整 `etcd` 配置文件参见 [etcd.conf](https://github.com/yeaheo/kubernetes-manifests/blob/master/config/etcd.conf)
 
 ### 启动 etcd 服务
 - 在所有的节点重复以下的步骤，直到所有机器的 etcd 服务都已启动。
