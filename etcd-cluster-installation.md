@@ -73,7 +73,7 @@
 - 创建 kubernetes.pem 证书时使用的 kubernetes-csr.json 文件的 hosts 字段包含所有 etcd 节点的IP，否则证书校验会出错；
 - `--initial-cluster-state` 值为 `new` 时，`--name` 的参数值必须位于 `--initial-cluster` 列表中；
 
-- 完整 `Systemd Unit` 文件参见 [etcd.service](../kubernetes-manifests/systemd/etcd/etcd.service)
+- 完整 `Systemd Unit` 文件参见 [etcd.service](https://github.com/yeaheo/kubernetes-manifests/blob/master/systemd/etcd/etcd.service)
 
 ### 创建 etcd 配置文件
 - etcd 配置文件 `/etc/etcd/etcd.conf` 也需要我们自己创建，具体内容如下：
@@ -93,6 +93,30 @@
   ```
 - 这是 192.168.8.66 节点的配置，其他两个 etcd 节点只要将上面的 IP 地址改成相应节点的 IP 地址即可。
 - `ETCD_NAME` 需换成对应节点的 infra1/2/3。
+- 其他两个节点的配置同上，只是对应 IP 地址和节点名称不同而已，需要同时启动 etcd 服务。
 
-- 完整 `etcd` 配置文件参见 [etcd.conf](../../../kubernetes-manifests/config/etcd/etcd.conf)
+- 完整 `etcd` 配置文件参见 [etcd.conf](https://github.com/yeaheo/kubernetes-manifests/blob/master/config/etcd/etcd.conf)
+
+### 启动 etcd 服务
+- 在所有的节点重复以下的步骤，直到所有机器的 etcd 服务都已启动。
+  ``` bash
+  systemctl daemon-reload
+  systemctl enable etcd
+  systemctl start etcd
+  systemctl status etcd
+  ```
+
+### 验证 etcd 服务
+- 当所有节点的 etcd 服务启动后需要验证 etcd 服务，需要指定相关证书，具体参考如下：
+  ``` bash
+  [root@k8s-master etcd]# etcdctl --ca-file=/etc/kubernetes/ssl/ca.pem \
+  --cert-file=/etc/kubernetes/ssl/kubernetes.pem \
+  --key-file=/etc/kubernetes/ssl/kubernetes-key.pem \
+  cluster-health
+  member 95dd0da5615b5497 is healthy: got healthy result from https://192.168.8.68:2379
+  member b62851294b10fff1 is healthy: got healthy result from https://192.168.8.66:2379
+  member d50b60d4b4a4a0f5 is healthy: got healthy result from https://192.168.8.67:2379
+  cluster is healthy
+  ```
+- 结果最后一行为 `cluster is healthy` 时表示集群服务正常。
 
