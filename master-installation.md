@@ -16,7 +16,7 @@
   admin-key.pem  admin.pem  ca-key.pem  ca.pem  kube-proxy-key.pem  kube-proxy.pem  kubernetes-key.pem  kubernetes.pem
   ```
 
-### 部署msater节点相关服务
+### 部署 msater 节点相关服务
 - 我们在安装 kubectl 工具的时候已经下载了 kubernetes server的软件包，可以直接使用已经下载的软件部署 master 节点。
 - 但是，这里有两种安装方式，如下：
 - **方式一：**
