@@ -67,7 +67,32 @@
   [Install]
   WantedBy=multi-user.target
   ```
+- 参数说明：
+- 指定 etcd 的工作目录为 `/var/lib/etcd`，数据目录为 `/var/lib/etcd`，需在启动服务前创建这个目录，否则启动服务的时候会报错。
+- 为了保证通信安全，需要指定 etcd 的公私钥(cert-file和key-file)、Peers 通信的公私钥和 CA 证书(peer-cert-file、peer-key-file、peer-trusted-ca-file)、客户端的CA证书（trusted-ca-file）；
+- 创建 kubernetes.pem 证书时使用的 kubernetes-csr.json 文件的 hosts 字段包含所有 etcd 节点的IP，否则证书校验会出错；
+- `--initial-cluster-state` 值为 `new` 时，`--name` 的参数值必须位于 `--initial-cluster` 列表中；
+
 - 完整 `Systemd Unit` 文件参见 [etcd.service](../kubernetes-manifests/systemd/etcd/etcd.service)
 
+### 创建 etcd 配置文件
+- etcd 配置文件 `/etc/etcd/etcd.conf` 也需要我们自己创建，具体内容如下：
+- `cat /etc/etcd/etcd.conf`
 
+  ``` conf
+  # [member]
+  ETCD_NAME=infra1
+  ETCD_DATA_DIR="/var/lib/etcd"
+  ETCD_LISTEN_PEER_URLS="https://192.168.8.66:2380"
+  ETCD_LISTEN_CLIENT_URLS="https://192.168.8.66:2379"
+  
+  # [cluster]
+  ETCD_INITIAL_ADVERTISE_PEER_URLS="https://192.168.8.66:2380"
+  ETCD_INITIAL_CLUSTER_TOKEN="etcd-cluster"
+  ETCD_ADVERTISE_CLIENT_URLS="https://192.168.8.66:2379"
+  ```
+- 这是 192.168.8.66 节点的配置，其他两个 etcd 节点只要将上面的 IP 地址改成相应节点的 IP 地址即可。
+- `ETCD_NAME` 需换成对应节点的 infra1/2/3。
+
+- 完整 `etcd` 配置文件参见 [etcd.conf](../../kubernetes-manifests/systemd/etcd/etcd.service)
 
