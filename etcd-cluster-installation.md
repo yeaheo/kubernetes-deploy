@@ -73,7 +73,7 @@
 - 创建 kubernetes.pem 证书时使用的 kubernetes-csr.json 文件的 hosts 字段包含所有 etcd 节点的IP，否则证书校验会出错；
 - `--initial-cluster-state` 值为 `new` 时，`--name` 的参数值必须位于 `--initial-cluster` 列表中；
 
-- 完整 `Systemd Unit` 文件参见 [etcd.service](../kubernetes-manifests/systemd/etcd/etcd.service)
+- 完整 `Systemd Unit` 文件参见 [etcd.service](/kubernetes-manifests/systemd/etcd/etcd.service)
 
 ### 创建 etcd 配置文件
 - etcd 配置文件 `/etc/etcd/etcd.conf` 也需要我们自己创建，具体内容如下：
@@ -94,5 +94,5 @@
 - 这是 192.168.8.66 节点的配置，其他两个 etcd 节点只要将上面的 IP 地址改成相应节点的 IP 地址即可。
 - `ETCD_NAME` 需换成对应节点的 infra1/2/3。
 
-- 完整 `etcd` 配置文件参见 [etcd.conf](../../kubernetes-manifests/systemd/etcd/etcd.service)
+- 完整 `etcd` 配置文件参见 [etcd.conf](../kubernetes-manifests/config/etcd/etcd.conf)
 
