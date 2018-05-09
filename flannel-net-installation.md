@@ -1,4 +1,5 @@
 ## kubernetes实践-flannel及docker服务配置
+
 - **检查 TLS 证书**
   ``` bash
   [root@ceph-node1 ~]# ls /etc/kubernetes/ssl/
