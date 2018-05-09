@@ -127,7 +127,7 @@
 
   > 其实 flanneld 和 docker 服务在 master 节点上是非必需的，但是我们建议在 master 节点上同样配置 flanneld 和 docker 服务，因为这样可以很方便的通过 master 节点访问 node 上的服务，例如插件 dashboard 的访问，我们可以通过 api-server 来访问：<http://master-ip:8080/ui>。
   > master 节点的 flanneld 和 docker 服务安装好后，我们在 master 节点可以 ping 通 nodes 节点的 flanneld 地址，例如：
-  > ``` bash
+  ``` bash
     [root@k8s-master ~]# ping 172.30.41.0
     PING 172.30.41.0 (172.30.41.0) 56(84) bytes of data.
     64 bytes from 172.30.41.0: icmp_seq=1 ttl=64 time=0.081 ms
@@ -145,7 +145,7 @@
     [root@k8s-master ~]# ping 172.30.79.0
     PING 172.30.79.0 (172.30.79.0) 56(84) bytes of data.
     64 bytes from 172.30.79.0: icmp_seq=1 ttl=64 time=0.658 ms
-    ```
+  ```
 
 
 
