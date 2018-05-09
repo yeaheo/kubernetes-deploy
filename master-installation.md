@@ -139,6 +139,72 @@
   ## Add your own!
   KUBE_API_ARGS="--authorization-mode=Node,RBAC  --runtime-config=rbac.authorization.k8s.io/v1beta1 --kubelet-https=true  --enable-bootstrap-token-auth --token-auth-file=/etc/kubernetes/token.csv --service-node-port-range=30000-32767 --tls-cert-file=/etc/kubernetes/ssl/kubernetes.pem --tls-private-key-file=/etc/kubernetes/ssl/kubernetes-key.pem --client-ca-file=/etc/kubernetes/ssl/ca.pem --service-account-key-file=/etc/kubernetes/ssl/ca-key.pem --etcd-cafile=/etc/kubernetes/ssl/ca.pem --etcd-certfile=/etc/kubernetes/ssl/kubernetes.pem --etcd-keyfile=/etc/kubernetes/ssl/kubernetes-key.pem --enable-swagger-ui=true --apiserver-count=3 --audit-log-maxage=30 --audit-log-maxbackup=3 --audit-log-maxsize=100 --audit-log-path=/var/lib/audit.log --event-ttl=1h"
   ```
+- **参数说明**
+- `--enable-bootstrap-token-auth` 该参数在 `v1.9` 版本已经成为正式的启动参数，但是在 `v1.6` 版本及以前的版本该参数为 `--experimental-bootstrap-token-auth`，`v1.7` 版本同 `v1.6` 版本， `v1.8` 版本同 `v1.9` 版本；
+- 如果中途修改过 `--service-cluster-ip-range` 地址，则必须将 default 命名空间的 kubernetes 的 service 给删除，使用命令 `kubectl delete service kubernetes`，然后系统会自动用新的ip重建这个service。
+- `--authorization-mode=Node,RBAC` 指定在安全端口使用 RBAC 授权模式，拒绝未通过授权的请求。 但是在 `v1.6` 版本中没有增加 `Node` 的授权模式。在 `v1.9` 版本中增加了 Node 授权的模式，否则将无法注册node;
+- kube-scheduler、kube-controller-manager 一般和 kube-apiserver 部署在同一台机器上，它们使用非安全端口和 kube-apiserver 通信;
+- kubelet、kube-proxy、kubectl 部署在其它 Node 节点上，如果通过安全端口访问 kube-apiserver，则必须先通过 TLS 证书认证，再通过 RBAC 授权；
+- kube-proxy、kubectl 通过在使用的证书里指定相关的 User、Group 来达到通过 RBAC 授权的目的；
+- 如果使用了 kubelet TLS Boostrap 机制，则不能再指定 `--kubelet-certificate-authority`、`--kubelet-client-certificate` 和 `--kubelet-client-key` 选项，否则后续 kube-apiserver 校验 kubelet 证书时出现 "x509: certificate signed by unknown authority" 错误；
+- `--admission-control` 值必须包含 `ServiceAccount`；
+- `--bind-address` 不能为 `127.0.0.1`；
+- `--runtime-config` 配置为 `rbac.authorization.k8s.io/v1beta1`，表示运行时的 `apiVersion`；
+- `--service-cluster-ip-range` 指定 `Service Cluster IP` 地址段，该地址段不能路由可达；
+- 缺省情况下 kubernetes 对象保存在 etcd `/registry` 路径下，可以通过 `--etcd-prefix` 参数进行调整；
+- 如果需要开通 http 的无认证的接口，则可以增加以下两个参数：`--insecure-port=8080 ``--insecure-bind-address=127.0.0.1`但是在生产环境上不要绑定到非 127.0.0.1 的地址上。
 
+- 完整 `apiserver` 配置文件参见 [apiserver](https://github.com/yeaheo/kubernetes-manifests/blob/master/config/apiserver)
 
+- **启动 kube-apiserver 服务**
+  ``` bash
+  systemctl daemon-reload
+  systemctl start kube-apiserver
+  systemctl enable kube-apiserver
+  systemctl status kube-apiserver
+  ```
 
+#### 配置 kube-controller-manager 服务
+- **创建 kube-controller-manager 的 systemd unit 文件**
+- 我们需要自己创建 kube-apiserver 的服务启动文件 `/usr/lib/systemd/system/kube-controller-manager.service`，具体内容如下:
+
+- `cat /usr/lib/systemd/system/kube-controller-manager.service`
+
+  ``` bash
+  [Unit]
+  Description=Kubernetes Controller Manager
+  Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+  
+  [Service]
+  EnvironmentFile=-/etc/kubernetes/config
+  EnvironmentFile=-/etc/kubernetes/controller-manager
+  ExecStart=/usr/local/bin/kube-controller-manager \
+          $KUBE_LOGTOSTDERR \
+          $KUBE_LOG_LEVEL \
+          $KUBE_MASTER \
+          $KUBE_CONTROLLER_MANAGER_ARGS
+  Restart=on-failure
+  LimitNOFILE=65536
+  
+  [Install]
+  WantedBy=multi-user.target
+  ```
+- 完整 `Systemd Unit` 文件参见 [kube-controller-manager.service](https://github.com/yeaheo/kubernetes-manifests/blob/master/systemd/kube-controller-manager.service)
+
+- **创建 `/etc/kubernetes/controller-manager` 配置文件**
+  ``` bash
+  ###
+  # The following values are used to configure the kubernetes controller-manager
+  
+  # defaults from config and apiserver should be adequate
+  
+  # Add your own!
+  KUBE_CONTROLLER_MANAGER_ARGS="--address=127.0.0.1 --service-cluster-ip-range=10.254.0.0/16 --cluster-name=kubernetes --cluster-signing-cert-file=/etc/kubernetes/ssl/ca.pem --cluster-signing-key-file=/etc/kubernetes/ssl/ca-key.pem  --service-account-private-key-file=/etc/kubernetes/ssl/ca-key.pem --root-ca-file=/etc/kubernetes/ssl/ca.pem --leader-elect=true"
+  ```
+- **参数说明**
+- `--service-cluster-ip-range` 参数指定 Cluster 中 Service 的CIDR范围，该网络在各 Node 间必须路由不可达，必须和 kube-apiserver 中的参数一致；
+- `--cluster-signing-*` 指定的证书和私钥文件用来签名为 TLS BootStrap 创建的证书和私钥；
+- `--root-ca-file` 用来对 kube-apiserver 证书进行校验，指定该参数后，才会在Pod 容器的 ServiceAccount 中放置该 CA 证书文件；
+- `--address` 值必须为 127.0.0.1，kube-apiserver 期望 scheduler 和 controller-manager 在同一台机器；
+
+- 完整 `controller-manager` 配置文件参见 [controller-manager](https://github.com/yeaheo/kubernetes-manifests/blob/master/config/controller-manager)
