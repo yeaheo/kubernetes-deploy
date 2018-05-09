@@ -44,3 +44,101 @@
 
 #### 配置 kube-apiserver 服务
 - **创建 kube-apiserver 的 systemd unit 文件**
+- 我们需要自己创建 kube-apiserver 的服务启动文件 `/usr/lib/systemd/system/kube-apiserver.service`，具体内容如下:
+- `cat /usr/lib/systemd/system/kube-apiserver.service`
+
+  ``` service
+  [Unit]
+  Description=Kubernetes API Service
+  Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+  After=network.target
+  After=etcd.service
+
+  [Service]
+  EnvironmentFile=-/etc/kubernetes/config
+  EnvironmentFile=-/etc/kubernetes/apiserver
+  ExecStart=/usr/local/bin/kube-apiserver \
+          $KUBE_LOGTOSTDERR \
+          $KUBE_LOG_LEVEL \
+          $KUBE_ETCD_SERVERS \
+          $KUBE_API_ADDRESS \
+          $KUBE_API_PORT \
+          $KUBELET_PORT \
+          $KUBE_ALLOW_PRIV \
+          $KUBE_SERVICE_ADDRESSES \
+          $KUBE_ADMISSION_CONTROL \
+          $KUBE_API_ARGS
+  Restart=on-failure
+  Type=notify
+  LimitNOFILE=65536
+  
+  [Install]
+  WantedBy=multi-user.target
+  ```
+- 完整 `Systemd Unit` 文件参见 [kube-apiserver.service](https://github.com/yeaheo/kubernetes-manifests/blob/master/systemd/kube-apiserver.service)
+
+- **创建 `/etc/kubernetes/config` 配置文件**
+  ``` bash
+  ###
+  # kubernetes system config
+  #
+  # The following values are used to configure various aspects of all
+  # kubernetes services, including
+  #
+  #   kube-apiserver.service
+  #   kube-controller-manager.service
+  #   kube-scheduler.service
+  #   kubelet.service
+  #   kube-proxy.service
+  # logging to stderr means we get it in the systemd journal
+  KUBE_LOGTOSTDERR="--logtostderr=true"
+  
+  # journal message level, 0 is debug
+  KUBE_LOG_LEVEL="--v=0"
+  
+  # Should this cluster be allowed to run privileged docker containers
+  KUBE_ALLOW_PRIV="--allow-privileged=true"
+  
+  # How the controller-manager, scheduler, and proxy find the apiserver
+  KUBE_MASTER="--master=http://192.168.8.66:8080"
+  ```
+- 完整全局配置文件，参见 [config](https://github.com/yeaheo/kubernetes-manifests/blob/master/config/config)
+
+  > 该配置文件同时被kube-apiserver、kube-controller-manager、kube-scheduler、kubelet、kube-proxy使用。所以我们需要将该文件复制到node所在机器上。
+
+- **创建 `/etc/kubernetes/apiserver` 配置文件**
+  ``` bash
+  ###
+  ## kubernetes system config
+  ##
+  ## The following values are used to configure the kube-apiserver
+  ##
+  #
+  ## The address on the local server to listen to.
+  #KUBE_API_ADDRESS="--insecure-bind-address=sz-pg-oam-docker-test-001.tendcloud.com"
+  KUBE_API_ADDRESS="--advertise-address=192.168.8.66 --bind-address=192.168.8.66 --insecure-bind-address=192.168.8.66"
+  
+  #
+  ## The port on the local server to listen on.
+  #KUBE_API_PORT="--port=8080"
+  #
+  ## Port minions listen on
+  #KUBELET_PORT="--kubelet-port=10250"
+  #
+  ## Comma separated list of nodes in the etcd cluster
+  KUBE_ETCD_SERVERS="--etcd-servers=https://192.168.8.66:2379,https://192.168.8.67:2379,https://192.168.8.68:2379"
+  
+  #
+  ## Address range to use for services
+  KUBE_SERVICE_ADDRESSES="--service-cluster-ip-range=10.254.0.0/16"
+  #
+  ## default admission control policies
+  KUBE_ADMISSION_CONTROL="--admission-control=DefaultStorageClass,NamespaceLifecycle,LimitRanger,ServiceAccount,ResourceQuota"
+  
+  #--enable-bootstrap-token-auth --token-auth-file=/etc/kubernetes/token.csv 
+  ## Add your own!
+  KUBE_API_ARGS="--authorization-mode=Node,RBAC  --runtime-config=rbac.authorization.k8s.io/v1beta1 --kubelet-https=true  --enable-bootstrap-token-auth --token-auth-file=/etc/kubernetes/token.csv --service-node-port-range=30000-32767 --tls-cert-file=/etc/kubernetes/ssl/kubernetes.pem --tls-private-key-file=/etc/kubernetes/ssl/kubernetes-key.pem --client-ca-file=/etc/kubernetes/ssl/ca.pem --service-account-key-file=/etc/kubernetes/ssl/ca-key.pem --etcd-cafile=/etc/kubernetes/ssl/ca.pem --etcd-certfile=/etc/kubernetes/ssl/kubernetes.pem --etcd-keyfile=/etc/kubernetes/ssl/kubernetes-key.pem --enable-swagger-ui=true --apiserver-count=3 --audit-log-maxage=30 --audit-log-maxbackup=3 --audit-log-maxsize=100 --audit-log-path=/var/lib/audit.log --event-ttl=1h"
+  ```
+
+
+
