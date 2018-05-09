@@ -201,10 +201,83 @@
   # Add your own!
   KUBE_CONTROLLER_MANAGER_ARGS="--address=127.0.0.1 --service-cluster-ip-range=10.254.0.0/16 --cluster-name=kubernetes --cluster-signing-cert-file=/etc/kubernetes/ssl/ca.pem --cluster-signing-key-file=/etc/kubernetes/ssl/ca-key.pem  --service-account-private-key-file=/etc/kubernetes/ssl/ca-key.pem --root-ca-file=/etc/kubernetes/ssl/ca.pem --leader-elect=true"
   ```
+
 - **参数说明**
 - `--service-cluster-ip-range` 参数指定 Cluster 中 Service 的CIDR范围，该网络在各 Node 间必须路由不可达，必须和 kube-apiserver 中的参数一致；
-- `--cluster-signing-*` 指定的证书和私钥文件用来签名为 TLS BootStrap 创建的证书和私钥；
+- `--cluster-signing-*` 指定的证书和私钥文件用来签名为 TLS BootStrap 创建的证书和私钥;
 - `--root-ca-file` 用来对 kube-apiserver 证书进行校验，指定该参数后，才会在Pod 容器的 ServiceAccount 中放置该 CA 证书文件；
-- `--address` 值必须为 127.0.0.1，kube-apiserver 期望 scheduler 和 controller-manager 在同一台机器；
+- `--address` 值必须为 127.0.0.1，因为当前 kube-apiserver 期望 scheduler 和 ontroller-manager 在同一台机器，否则会报错：“scheduler Unhealthy Get http://127.0.0.1:10251/healthz: "dial tcp 127.0.0.1:10251: getsockopt: connection refused "
 
 - 完整 `controller-manager` 配置文件参见 [controller-manager](https://github.com/yeaheo/kubernetes-manifests/blob/master/config/controller-manager)
+
+- **启动 kube-controller-manager 服务**
+  ``` bash
+  systemctl daemon-reload
+  systemctl enable kube-controller-manager
+  systemctl start kube-controller-manager
+  systemctl status kube-controller-manager
+  ```
+
+#### 配置和启动 kube-scheduler 服务
+- **创建 kube-scheduler 的 Systemd Unit 文件**
+- 我们需要自己创建 kube-scheduler 的服务启动文件 `/usr/lib/systemd/system/kube-scheduler.service`，具体内容如下:
+- `cat /usr/lib/systemd/system/kube-scheduler.service`
+  
+  ``` bash
+  [Unit]
+  Description=Kubernetes Scheduler Plugin
+  Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+  
+  [Service]
+  EnvironmentFile=-/etc/kubernetes/config
+  EnvironmentFile=-/etc/kubernetes/scheduler
+  ExecStart=/usr/local/bin/kube-scheduler \
+              $KUBE_LOGTOSTDERR \
+              $KUBE_LOG_LEVEL \
+              $KUBE_MASTER \
+              $KUBE_SCHEDULER_ARGS
+  Restart=on-failure
+  LimitNOFILE=65536
+  
+  [Install]
+  WantedBy=multi-user.target
+  ```
+- 完整 Systemd Unit 文件参见 [kube-scheduler.service](https://github.com/yeaheo/kubernetes-manifests/blob/master/systemd/kube-scheduler.service)
+
+- **创建 `/etc/kubernetes/scheduler` 文件**
+  
+  ``` bash
+  ###
+  # kubernetes scheduler config
+  
+  # default config should be adequate
+  
+  # Add your own!
+  KUBE_SCHEDULER_ARGS="--leader-elect=true --address=127.0.0.1"
+  ```
+- **参数说明**
+- `--address` 值必须为 127.0.0.1，因为当前 kube-apiserver 期望 scheduler 和 controller-manager 在同一台机器；
+- 完整 `scheduler` 配置文件参见 [scheduler](https://github.com/yeaheo/kubernetes-manifests/blob/master/config/scheduler)
+
+- **启动 kube-scheduler 服务**
+  ``` bash
+  systemctl daemon-reload
+  systemctl start kube-scheduler
+  systemctl enable kube-scheduler
+  systemctl status kube-scheduler
+  ```
+
+#### 验证 master 节点相关功能是否正常
+- master 节点上的服务安装完成后，我们需要进一步验证其功能是否能正藏工作，具体参考如下：
+  ``` bash
+  [root@k8s-master system]# kubectl get componentstatus 
+  NAME                 STATUS    MESSAGE              ERROR
+  scheduler            Healthy   ok                   
+  controller-manager   Healthy   ok                   
+  etcd-2               Healthy   {"health": "true"}   
+  etcd-1               Healthy   {"health": "true"}   
+  etcd-0               Healthy   {"health": "true"}
+  ```
+- 从上面可以知道，我们部署的 master 节点基本服务都可以正常工作。  
+
+
