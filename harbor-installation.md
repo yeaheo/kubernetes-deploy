@@ -52,11 +52,13 @@
   ```
 - 等待安装过程即可。
 
-- 待脚本执行完成后使用 docke-compose ps 即可查看，常用命令包含以下几个：  
-- `docker-compose up -d`   后台启动，如果容器不存在根据镜像自动创建
-- `docker-compose down -v` 停止容器并删除容器
-- `docker-compose start`   启动容器，容器不存在就无法启动，不会自动创建镜像
-- `docker-compose stop`    停止容器
+- 待脚本执行完成后使用 docke-compose ps 即可查看，常用命令包含以下几个：
+  ``` bash
+  docker-compose up -d      # 后台启动，如果容器不存在根据镜像自动创建
+  docker-compose down -v    # 停止容器并删除容器
+  docker-compose start      # 启动容器，容器不存在就无法启动，不会自动创建镜像
+  docker-compose stop       # 停止容器
+  ```
   
   > 注：其实上面是停止 `docker-compose.yml` 中定义的所有容器，默认情况下 `docker-compose`就是操作同目录下的 `docker-compose.yml`文件，所以我们需要切换到 harbor 目录下才可以执行 docker-compose 相关命令，如果使用其他 `yml`文件，可以使用-f自己指定。
 
