@@ -22,10 +22,12 @@
 - harbor下载地址：<https://github.com/vmware/harbor/releases>，在这里可以选择自己所需要的安装包进行下载。
 
 - harbor 服务具体安装步骤如下：
-- 1、下载并解压软件包;
-- 2、配置 `harbor.cfg` 文件;
-- 3、执行脚本文件 `install.sh` 进行安装;
-
+  ``` bash
+  1、下载并解压软件包;
+  2、配置 `harbor.cfg` 文件;
+  3、执行脚本文件 `install.sh` 进行安装;
+  ```
+  
 - **解压软件包**
 - `tar xvf harbor-online-installer-<version>.tgz -C /srv/`
 
