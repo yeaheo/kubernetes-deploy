@@ -19,7 +19,7 @@
 ### 安装 harbor 服务
 - harbor 安装方式有两种，一种是在线安装，另一种是离线安装，为了可以快速安装我们选择离线安装，因为在线安装会在线下载所需镜像，速度较慢。
 - **下载离线安装包**
-  - harbor下载地址：<https://github.com/vmware/harbor/releases>，在这里可以选择自己所需要的安装包进行下载。
+- harbor下载地址：<https://github.com/vmware/harbor/releases>，在这里可以选择自己所需要的安装包进行下载。
 
 - harbor 服务具体安装步骤如下：
 - 1、下载并解压软件包;
