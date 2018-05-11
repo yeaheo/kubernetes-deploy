@@ -3,7 +3,7 @@
 - 参考链接：<https://jimmysong.io/kubernetes-handbook>
 -------------------------------------------------------
 ![kubernetes-dashboard](https://github.com/yeaheo/hello.linux/blob/master/images/kubernetes-dashboard.png)
-- 步骤列表：
+- **步骤列表**：
 - [kubernetes-部署 harbor 私有镜像仓库](./harbor-installation.md)
 - [kubernetes-创建 TLS 证书及密钥](./create-tls-and-secret-key.md)
 - [kubernetes-安装 kubectl 命令行工具](./kubectl-tool-installation.md)
