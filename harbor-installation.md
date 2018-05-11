@@ -27,9 +27,12 @@
   2、配置 `harbor.cfg` 文件;
   3、执行脚本文件 `install.sh` 进行安装;
   ```
-  
+
 - **解压软件包**
-- `tar xvf harbor-online-installer-<version>.tgz -C /srv/`
+  ``` bash
+  tar xvf harbor-online-installer-<version>.tgz -C /srv/
+  # harbor 安装目录为 /srv/ 目录。
+  ```
 
 - **修改 `harbor.cfg` 文件**
 - 在这里，我们只需要修改以下参数：
