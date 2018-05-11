@@ -2,7 +2,8 @@
 - 邮箱地址：<helleo.cn@gmail.com>
 - 参考链接：<https://jimmysong.io/kubernetes-handbook>
 -------------------------------------------------------
-- 按照以下顺序部署即可：
+![kubernetes-dashboard](https://github.com/yeaheo/hello.linux/blob/master/images/kubernetes-dashborad.png)
+- 步骤列表：
 - [kubernetes-部署 harbor 私有镜像仓库](./harbor-installation.md)
 - [kubernetes-创建 TLS 证书及密钥](./create-tls-and-secret-key.md)
 - [kubernetes-安装 kubectl 命令行工具](./kubectl-tool-installation.md)
