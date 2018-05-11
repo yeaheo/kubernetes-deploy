@@ -9,6 +9,7 @@
   ```
 - 我们在前面已经配置了 Flanneld 和 Docker 服务，具体参见 [配置 docker 及 flanneld 服务](./flannel-net-installation.md)
 - 我们本次只安装 `kubelet` 和 `kube-proxy` 服务。
+  
   > kubernets `v1.9` 相对于 kuberentes `v1.6` 集群，必须关闭swap，否则kubelet启动将失败。
   > 关闭 `swap` 只需修改 `/etc/fstab` 将，`swap` 系统注释掉。
   > 如果要临时关闭，可以用 `swapoff -a`， `-a` 表示关闭所有交换设备。
