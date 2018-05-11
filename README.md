@@ -12,6 +12,7 @@
 - [kubernetes-部署 master 节点相关服务](./master-installation.md)
 - [kubernetes-安装配置 flanneld 及 docker 服务](./flannel-net-installation.md)
 - [kubernetes-部署 nodes 节点相关服务](./nodes-installation.md)
+- [kubernetes-配置 kubectl 命令行工具自动补全](./kubectl-auto-completion.md)
 - [kubernetes-部署 kube-dns 插件](./kube-dns-addons-installation.md)
 - [kubernetes-部署 dashboard 插件](./kube-dashboard-addons-installation.md)
 - [kubernetes-部署 heaspter 插件](./kube-heaspter-addons-installation.md)
