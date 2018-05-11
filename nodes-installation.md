@@ -145,6 +145,61 @@
 - 假如你更新 kubernetes 的证书，只要没有更新 token.csv，当重启 kubelet 后，该 node 就会自动加入到 kuberentes 集群中，而不会重新发送 certificaterequest，也不需要在 master 节点上执行 `kubectl certificate approve`操作。前提是不要删除 node 节点上的`/etc/kubernetes/ssl/kubelet*` 和 `/etc/kubernetes/kubelet.kubeconfig` 文件。否则kubelet启动时会提示找不到证书而失败。
   > 如果启动 kubelet 的时候见到证书相关的报错，有个 trick 可以解决这个问题，可以将 master 节点上的 `~/.kube/config` 文件（该文件在安装 kubectl 命令行工具这一步中将会自动生成）拷贝到 node 节点的 `/etc/kubernetes/kubelet.kubeconfig` 位置，这样就不需要通过 CSR，当 kubelet 启动后就会自动加入的集群中。
 
+### 安装并配置 kube-proxy 服务
+- 安装 conntrack
+  ``` bash
+  yum -y install conntrack-tools
+  ```
+- **创建 kube-proxy 的 Systemd Unit文件**
+- unit 文件路径：`/usr/lib/systemd/system/kube-proxy.service`
+  ``` bash
+  [Unit]
+  Description=Kubernetes Kube-Proxy Server
+  Documentation=https://github.com/GoogleCloudPlatform/kubernetes
+  After=network.target
+  
+  [Service]
+  EnvironmentFile=-/etc/kubernetes/config
+  EnvironmentFile=-/etc/kubernetes/proxy
+  ExecStart=/usr/local/bin/kube-proxy \
+          $KUBE_LOGTOSTDERR \
+          $KUBE_LOG_LEVEL \
+          $KUBE_MASTER \
+          $KUBE_PROXY_ARGS
+  Restart=on-failure
+  LimitNOFILE=65536
+  
+  [Install]
+  WantedBy=multi-user.target
+  ```
+- 完整 system unit 文件参见 [kube-proxy.service](https://github.com/yeaheo/kubernetes-manifests/blob/master/systemd/kube-proxy.service)
 
+- **创建 kube-proxy 的配置文件**
+- kube-poxy 配置文件路径： `/etc/kubernetes/proxy`
+  ``` bash
+  ###
+  # kubernetes proxy config
+  
+  # default config should be adequate
+  
+  # Add your own!
+  KUBE_PROXY_ARGS="--bind-address=192.168.8.67 --hostname-override=k8s-node1 --kubeconfig=/etc/kubernetes/kube-proxy.kubeconfig --cluster-cidr=10.254.0.0/16"
+  ```
+- **参数说明**
+- `--hostname-override` 参数值必须与 kubelet 的值一致，否则 kube-proxy 启动后会找不到该 Node，从而不会创建任何 iptables 规则；
+- `kube-proxy` 根据 `-cluster-cidr` 判断集群内部和外部流量，指定 `--cluster-cidr` 或 `--masquerade-all` 选项后 kube-proxy 才会对访问 Service IP 的请求做 SNAT；
+- `--kubeconfig` 指定的配置文件嵌入了 kube-apiserver 的地址、用户名、证书、秘钥等请求和认证信息；
+- 预定义的 RoleBinding cluster-admin 将User system:kube-proxy 与 Role system:node-proxier 绑定，该 Role 授予了调用 kube-apiserver Proxy 相关 API 的权限；
+
+- 完整 kube-proxy 配置文件参见 [proxy](https://github.com/yeaheo/kubernetes-manifests/blob/master/config/proxy)
+
+- **启动 kube-proxy 服务**
+  ``` bash
+  systemctl daemon-reload
+  systemctl start kube-proxy
+  systemctl enable kube-proxy
+  systemctl status kube-proxy
+  ```
+- 至此，整个 kubernetes 集群安装完成，剩下的工作就是在集群上安装各种必要组件了，包括 dns、dashboard、heapster等等；
 
 
