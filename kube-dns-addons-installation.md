@@ -15,7 +15,7 @@
   [root@k8s-master dns]# pwd
   /srv/kubernetes/cluster/addons/dns
   ```
-- 因为墙的原因，这些镜像我们需要翻墙下载，很是不方便，我下载了所需要的镜像，并上传到了极速云镜像仓库欢迎大家下载使用：
+- 因为墙的原因，这些镜像我们需要翻墙下载，很是不方便，我下载了所需要的镜像，并上传到了时速云镜像仓库欢迎大家下载使用：
   ``` bash
   index.tenxcloud.com/yeaheo/k8s-dns-dnsmasq-nanny-amd64:1.14.8
   index.tenxcloud.com/yeaheo/k8s-dns-kube-dns-amd64:1.14.8
