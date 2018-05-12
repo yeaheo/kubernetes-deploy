@@ -60,7 +60,7 @@
 
 - 为了方便，本次我们通过用 API server 访问 dashboard：<http://master-ip:8080/ui>
 
-![dashboard-login](https://github.com/yeaheo/hello.linux/blob/master/images/dashboard-login.png)
+- ![dashboard-login](https://github.com/yeaheo/hello.linux/blob/master/images/dashboard-login.png)
 
 - 由上图可知，新版 dashboard 支持使用 `kubeconfig` 和 `token` 两种的认证方式
 - 这些认证问题，后续再研究，我们本次给匿名用户授予 `cluster-admin` 权限。
@@ -91,7 +91,7 @@
   ```
 - 执行成功后，直接 skip 登录验证，就可以看到完整的 dashboard 的界面了。
 
-![dashboard-ui](https://github.com/yeaheo/hello.linux/blob/master/images/dashboard-ui.png)
+- ![dashboard-ui](https://github.com/yeaheo/hello.linux/blob/master/images/dashboard-ui.png)
 
 - 后续有关 Kubernetes-dashboard 的功能持续更新中...
 
