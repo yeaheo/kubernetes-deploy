@@ -1,10 +1,12 @@
 ## kubernetes实践-安装 kube-dns 插件
 - `kube-dns` 官方的 `yaml` 文件其实在我们先前下载的 `kubernetes server` 软件包内，具体路径为：`/srv/kubernetes/cluster/addons/dns`
+  
   > 我是把 kuberntes 解压到了 `/srv/` 目录下
 
 ### 准备 kube-dns 相关镜像
 
 - `kube-dns` 插件直接使用 kubernetes 部署，官方的配置文件中包含以下镜像：
+  
   ``` bash
   [root@k8s-master dns]# cat kube-dns.yaml.base | grep image
         image: gcr.io/google_containers/k8s-dns-kube-dns-amd64:1.14.8
@@ -69,6 +71,7 @@
 
 ### 系统预定义的 RoleBinding
 - 预定义的 `RoleBinding system:kube-dns` 将 `kube-system` 命名空间的 `kube-dns ServiceAccount` 与 `ystem:kube-dns Role` 绑定， 该 Role 具有访问 `kube-apiserver` DNS 相关 API 的权限；
+  
   ``` bash
   [root@k8s-master ~]# kubectl get clusterrolebindings system:kube-dns -o yaml
   apiVersion: rbac.authorization.k8s.io/v1
