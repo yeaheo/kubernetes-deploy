@@ -56,7 +56,7 @@
 - 检查 kubernets dashboard 界面，看是显示各 Nodes、Pods 的 CPU、内存、负载等利用率曲线图，如果没有出现可以重启一下 dashboard。
 
 - 我们可以用以下命令查看集群信息：
-  ``` bash
+  ``` html
   # kubectl cluster-info 
   Kubernetes master is running at https://192.168.8.66:6443
   Heapster is running at https://192.168.8.66:6443/api/v1/namespaces/kube-system/services/heapster/proxy
