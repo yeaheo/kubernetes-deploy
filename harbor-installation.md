@@ -6,7 +6,7 @@
 ### 安装 docker 和 docker-compose
 - 安装 harbor 需要 docker 版本大于 `v1.10`，docker-compose 版本需要是 `v1.6` 以上。
 - 安装 docker 可以参考：[docker-installation](https://docs.docker.com/engine/installation)
-- 安装 docker 也可以参考个人笔记：[docker-ce-installation](https://github.com/yeaheo/hello.linux/blob/master/Docker/Docker-%E5%AE%89%E8%A3%85%E9%83%A8%E7%BD%B2.md)
+- 安装 docker 也可以参考个人笔记：[docker-ce-installation](https://github.com/yeaheo/hello.linux/blob/master/Docker/docker-installation.md)
 
 - docker-compose 安装请参考：[docker-compose-installation](https://docs.docker.com/compose/install)
 - 另一种安装 docker-compose 的方式是通过 `pip` 来安装，具体如下：
