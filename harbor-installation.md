@@ -107,5 +107,5 @@
   ``` bash
   docker pull 192.168.8.69/library/hello-world:v1
   ```
-  > docker 默认从 docker hub 拉取镜像，在国内速度比较慢，需要配置镜像速度器，具体参见 [docker配置镜像加速器](https://github.com/yeaheo/hello.linux/blob/master/Docker/docker-image-accelerator-installation.md)
+  > docker 默认从 docker hub 拉取镜像，在国内速度比较慢，需要配置镜像速度器，具体参见 [docker配置镜像加速器](https://github.com/yeaheo/hello.linux/blob/master/Docker/docker-image-accelerator-installation.md)
 
