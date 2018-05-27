@@ -6,7 +6,7 @@
 ### 安装 docker 和 docker-compose
 - 安装 harbor 需要 docker 版本大于 `v1.10`，docker-compose 版本需要是 `v1.6` 以上。
 - 安装 docker 可以参考：[docker-installation](https://docs.docker.com/engine/installation)
-- 安装 docker 也可以参考个人笔记：[docker-ce-installation](https://github.com/yeaheo/hello.linux/blob/master/Docker/docker-installation.md)
+- 安装 docker 也可以参考个人笔记：[docker-ce-installation](https://github.com/yeaheo/docker-base/blob/master/docker-installation.md)
 
 - docker-compose 安装请参考：[docker-compose-installation](https://docs.docker.com/compose/install)
 - 另一种安装 docker-compose 的方式是通过 `pip` 来安装，具体如下：
@@ -107,5 +107,5 @@
   ``` bash
   docker pull 192.168.8.69/library/hello-world:v1
   ```
-  > docker 默认从 docker hub 拉取镜像，在国内速度比较慢，需要配置镜像速度器，具体参见 [docker配置镜像加速器](https://github.com/yeaheo/hello.linux/blob/master/Docker/docker-image-accelerator-installation.md)
+  > docker 默认从 docker hub 拉取镜像，在国内速度比较慢，需要配置镜像速度器，具体参见 [docker配置镜像加速器](https://github.com/yeaheo/docker-base/blob/master/docker-image-accelerator-installation.md)
 
