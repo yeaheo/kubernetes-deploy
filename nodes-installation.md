@@ -105,6 +105,7 @@
 
   > 其他 node 节点上的 kubelet 配置文件对应的 IP 地址需要改为每台 node 节点的 IP 地址。
   > 主要需要修改 `KUBELET_ADDRESS` 和 `KUBELET_HOSTNAME` 参数。
+  > 后期如果需要加 node ，需要修改其他机器的 hosts 文件，否则无法查看新 node 上的 pod 日志。
 
 - **启动 kubelet 服务**
 - 我们修改完相关参数后就可以启动 kubelet 服务了。
