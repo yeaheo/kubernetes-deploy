@@ -1,6 +1,6 @@
 ## 手动安装配置 kubernetes 集群及其插件指南
 - 邮箱地址：<helleo.cn@gmail.com>
-- 参考资料：<https://jimmysong.io/kubernetes-handbook/>
+
 -------------------------------------------------------
 ![kubernetes-dashboard](https://github.com/yeaheo/hello.linux/blob/master/images/flower.png)
 - **步骤列表**：
