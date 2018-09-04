@@ -179,6 +179,12 @@
 - 字段说明：
 - 后续 kube-apiserver 使用 RBAC 对客户端(如 kubelet、kube-proxy、Pod)请求进行授权，kube-apiserver 预定义了一些 RBAC 使用的 RoleBindings，如 cluster-admin 将 Group system:masters 与 Role cluster-admin 绑定，该 Role 授予了调用kube-apiserver 的所有 API的权限；
 - OU 指定该证书的 Group 为 system:masters，kubelet 使用该证书访问 kube-apiserver 时 ，由于证书被 CA 签名，所以认证通过，同时由于证书用户组为经过预授权的 system:masters，所以被授予访问所有 API 的权限；
+- **生成 admin 证书和私钥**
+  ```bash
+  $ cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=kubernetes admin-csr.json | cfssljson -bare admin
+  $ ls admin*
+  admin.csr  admin-csr.json  admin-key.pem  admin.pem
+  ```
 
 #### 创建 kube-proxy 证书
 - **创建 kube-proxy 证书签名请求文件**
@@ -206,6 +212,12 @@
 - 字段说明如下：
 - CN 指定该证书的 User 为 system:kube-proxy；
 - kube-apiserver 预定义的 RoleBinding cluster-admin 将User system:kube-proxy 与 Role system:node-proxier 绑定，该 Role 授予了调用 kube-apiserver Proxy 相关 API 的权限；
+- **生成 kube-proxy 客户端证书和私钥**
+  ```bash
+  $ cfssl gencert -ca=ca.pem -ca-key=ca-key.pem -config=ca-config.json -profile=kubernetes  kube-proxy-csr.json | cfssljson -bare kube-proxy
+  $ ls kube-proxy*
+  kube-proxy.csr  kube-proxy-csr.json  kube-proxy-key.pem  kube-proxy.pem
+  ```
 
 ### 校验证书
 - 以 kubernetes 证书为例
