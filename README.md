@@ -1,8 +1,8 @@
 ## 手动安装配置 kubernetes 集群及其插件指南
-- 邮箱地址：<helleo.cn@gmail.com>
+- 邮箱地址：<eric.lv@aeric.io>
 
 -------------------------------------------------------
-![kubernetes-dashboard](https://github.com/yeaheo/hello.linux/blob/master/images/flower.png)
+
 - **步骤列表**：
 - [kubernetes-部署 harbor 私有镜像仓库](./harbor-installation.md)
 - [kubernetes-创建 TLS 证书及密钥](./create-tls-and-secret-key.md)
